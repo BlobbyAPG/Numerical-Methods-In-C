@@ -186,9 +186,21 @@ class RootFindingPage(ttk.Frame):
         label = ttk.Label(self, text="Root-finding Methods", font=("Helvetica", 16))
         label.pack(pady=10, padx=10)
 
-        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
-        button.pack(side="top", pady=5, anchor="center")
+        buttons = [
+            ("Bisection Method", "BisectionPage"),
+            ("Newton-Raphson Method", "NewtonRaphsonPage"),
+            ("Secant Method", "SecantPage"),
+            ("False Position Method", "FalsePositionPage"),
+            ("Fixed-Point Iteration Method", "FixedPointIterationPage"),
+            ("Halley's Method", "HalleysMethodPage")
+        ]
 
+        for text, page_name in buttons:
+            button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
+            button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
+
+        back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
 class InterpolationPage(ttk.Frame):
     def __init__(self, parent, controller):
@@ -198,8 +210,19 @@ class InterpolationPage(ttk.Frame):
         label = ttk.Label(self, text="Interpolation and Approximation", font=("Helvetica", 16))
         label.pack(pady=10, padx=10)
 
-        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
-        button.pack(side="top", pady=5, anchor="center")
+        buttons = [
+            ("Lagrange Interpolation", "LagrangeInterpolationPage"),
+            ("Divided Differences", "DividedDifferencesPage"),
+            ("Forward Interpolation", "ForwardInterpolationPage"),
+            ("Backward Interpolation", "BackwardInterpolationPage")
+        ]
+
+        for text, page_name in buttons:
+            button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
+            button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
+
+        back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
 class LinearAlgebraPage(ttk.Frame):
     def __init__(self, parent, controller):
@@ -209,8 +232,17 @@ class LinearAlgebraPage(ttk.Frame):
         label = ttk.Label(self, text="Linear Algebra", font=("Helvetica", 16))
         label.pack(pady=10, padx=10)
 
-        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
-        button.pack(side="top", pady=5, anchor="center")
+        buttons = [
+            ("Jacobi Method", "JacobiMethodPage"),
+            ("Gauss-Seidel Method", "GaussSeidelMethodPage")
+        ]
+
+        for text, page_name in buttons:
+            button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
+            button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
+
+        back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        back_button.pack(side="top", pady=5, anchor="center")
 
 class NumericalIntegrationPage(ttk.Frame):
     def __init__(self, parent, controller):
@@ -220,8 +252,17 @@ class NumericalIntegrationPage(ttk.Frame):
         label = ttk.Label(self, text="Numerical Integration", font=("Helvetica", 16))
         label.pack(pady=10, padx=10)
 
-        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
-        button.pack(side="top", pady=5, anchor="center")
+        buttons = [
+            ("Trapezoidal Rule", "TrapezoidalRulePage"),
+            ("Simpson's Rule", "SimpsonsRulePage")
+        ]
+
+        for text, page_name in buttons:
+            button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
+            button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
+
+        back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
 class NumericalDifferentiationPage(ttk.Frame):
     def __init__(self, parent, controller):
@@ -231,8 +272,20 @@ class NumericalDifferentiationPage(ttk.Frame):
         label = ttk.Label(self, text="Numerical Differentiation", font=("Helvetica", 16))
         label.pack(pady=10, padx=10)
 
-        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
-        button.pack(side="top", pady=5, anchor="center")
+        buttons = [
+            ("2 Points Formula (Forward)", "TwoPointsForwardFormulaPage"),
+            ("2 Points Formula (Backward)", "BackwardTwoPointsFormulaPage"),
+            ("3 Points Formula (Forward)", "ThreePointsForwardFormulaPage"),
+            ("3 Points Formula (Backward)", "ThreePointsBackwardFormulaPage"),
+            ("3 Points Formula (Central)", "ThreePointsCentralFormulaPage")
+        ]
+
+        for text, page_name in buttons:
+            button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
+            button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
+
+        back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
 class ODEsPage(ttk.Frame):
     def __init__(self, parent, controller):
@@ -242,8 +295,20 @@ class ODEsPage(ttk.Frame):
         label = ttk.Label(self, text="Ordinary Differential Equations (ODEs)", font=("Helvetica", 16))
         label.pack(pady=10, padx=10)
 
-        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
-        button.pack(side="top", pady=5, anchor="center")
+        buttons = [
+            ("Euler's Method", "EulersMethodPage"),
+            ("Modified Euler's Method", "ModifiedEulersMethodPage"),
+            ("Runge-Kutta (RK2)", "RungeKutta2Page"),
+            ("Runge-Kutta (RK3)", "RungeKutta3Page"),
+            ("Runge-Kutta (RK4)", "RungeKutta4Page")
+        ]
+
+        for text, page_name in buttons:
+            button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
+            button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
+
+        back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 # Run the app
 if __name__ == "__main__":
     app = NumericalMethodsApp()
