@@ -2,18 +2,236 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 import ctypes
-import ctypes
 import os
 
-# if os.name == 'nt':
-#     mylib = ctypes.CDLL("build/impl.dll")
+mylib = ctypes.CDLL("D:\\IMPORTANT DATA\\AIU Computer Engineering\\CE Year 2\\Semester 2\\MAT315 Numerical Analysis\Project\\Numerical-Methods-In-C\\impl.dll")
+
+
+# // Root-finding Methods Section:
+# // - Bisection Method
+# // - Newton-Raphson Method
+# // - Secant Method
+# // - Regula Falsi Method (False Position)
+# // - Fixed-Point Iteration Method
+# // - Halley's Method
 
 def bisection(f, a, b, err, iter):
     CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
     func = CFUNCTYPE(f)
     return mylib.bisection(func, a, b, err, iter)
 
-# class NumericalMethodsApp(tk.Tk):
+def newt_raph(f, df, x0, err, iter):
+    CFUNCTYPE_f = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    CFUNCTYPE_df = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func_f = CFUNCTYPE_f(f)
+    func_df = CFUNCTYPE_df(df)
+    return mylib.newt_raph(func_f, func_df, x0, err, iter)
+
+def secant(f, x0, x1, err, iter):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    return mylib.secant(func, x0, x1, err, iter)
+
+def reg_falsi(f, a, b, err, iter):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    return mylib.reg_falsi(func, a, b, err, iter)
+
+def fixed_pt_iter(g, x0, err, iter):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(g)
+    return mylib.fixed_pt_iter(func, x0, err, iter)
+
+def halleys(f, df, ddf, x0, err, iter):
+    CFUNCTYPE_f = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    CFUNCTYPE_df = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    CFUNCTYPE_ddf = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func_f = CFUNCTYPE_f(f)
+    func_df = CFUNCTYPE_df(df)
+    func_ddf = CFUNCTYPE_ddf(ddf)
+    return mylib.halleys(func_f, func_df, func_ddf, x0, err, iter)
+
+# // Interpolation & Approximation Methods Section:
+# // - Lagrange Interpolation
+# // - Divided Differences Interpolation
+# // - Forward Differences Interpolation
+# // - Backward Differences Interpolation
+
+def lagrange(x, y, n, x_interp):
+    x_arr = (ctypes.c_double * n)(*x)
+    y_arr = (ctypes.c_double * n)(*y)
+    mylib.lagrange.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_double]
+    mylib.lagrange.restype = ctypes.c_double
+    return mylib.lagrange(x_arr, y_arr, n, x_interp)
+
+def divi_diffs(x, y, n):
+    x_arr = (ctypes.c_double * n)(*x)
+    y_arr = (ctypes.c_double * n)(*y)
+    coefficients = (ctypes.c_double * n)()
+    mylib.divi_diffs.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int]
+    mylib.divi_diffs.restype = ctypes.c_double
+    mylib.divi_diffs(x_arr, y_arr, coefficients, n)
+    return list(coefficients)
+
+def fwd_intpol(x, y, n, x_interp):
+    x_arr = (ctypes.c_double * n)(*x)
+    y_arr = (ctypes.c_double * n)(*y)
+    mylib.fwd_intpol.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_double]
+    mylib.fwd_intpol.restype = ctypes.c_double
+    return mylib.fwd_intpol(x_arr, y_arr, n, x_interp)
+
+def bckwd_intpol(x, y, n, x_interp):
+    x_arr = (ctypes.c_double * n)(*x)
+    y_arr = (ctypes.c_double * n)(*y)
+    mylib.bckwd_intpol.argtypes = [ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_double]
+    mylib.bckwd_intpol.restype = ctypes.c_double
+    return mylib.bckwd_intpol(x_arr, y_arr, n, x_interp)
+
+# // Linear Algebra Methods Section:
+# // - Jacobi Iterative Method
+# // - Gauss-Seidel Iterative Method
+
+def jacobi(A, b, x, n, err, iter):
+    A_arr = (ctypes.POINTER(ctypes.c_double) * n)()
+    for i in range(n):
+        A_arr[i] = (ctypes.c_double * n)(*A[i])
+    b_arr = (ctypes.c_double * n)(*b)
+    x_arr = (ctypes.c_double * n)(*x)
+    mylib.jacobi.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_double)), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_double, ctypes.c_int]
+    mylib.jacobi.restype = None
+    mylib.jacobi(A_arr, b_arr, x_arr, n, err, iter)
+    return list(x_arr)
+
+def gau_sei(A, b, x, n, err, iter):
+    A_arr = (ctypes.POINTER(ctypes.c_double) * n)()
+    for i in range(n):
+        A_arr[i] = (ctypes.c_double * n)(*A[i])
+    b_arr = (ctypes.c_double * n)(*b)
+    x_arr = (ctypes.c_double * n)(*x)
+    mylib.gau_sei.argtypes = [ctypes.POINTER(ctypes.POINTER(ctypes.c_double)), ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_double), ctypes.c_int, ctypes.c_double, ctypes.c_int]
+    mylib.gau_sei.restype = None
+    mylib.gau_sei(A_arr, b_arr, x_arr, n, err, iter)
+    return list(x_arr)
+
+# // Numerical Differentiation Methods Section:
+# // - Two Point Forward Difference Method
+# // - Two Point Backward Difference Method
+# // - Three Point Forward Difference Method
+# // - Three Point Backward Difference Method
+# // - Three Point Central Difference Method
+
+def two_pt_fwd_diff(f, x, h):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    mylib.two_pt_fwd_diff.argtypes = [CFUNCTYPE, ctypes.c_double, ctypes.c_double]
+    mylib.two_pt_fwd_diff.restype = ctypes.c_double
+    return mylib.two_pt_fwd_diff(func, x, h)
+
+def two_pt_bckd_diff(f, x, h):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    mylib.two_pt_bckd_diff.argtypes = [CFUNCTYPE, ctypes.c_double, ctypes.c_double]
+    mylib.two_pt_bckd_diff.restype = ctypes.c_double
+    return mylib.two_pt_bckd_diff(func, x, h)
+
+def three_pt_fwd_diff(f, x, h):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    mylib.three_pt_fwd_diff.argtypes = [CFUNCTYPE, ctypes.c_double, ctypes.c_double]
+    mylib.three_pt_fwd_diff.restype = ctypes.c_double
+    return mylib.three_pt_fwd_diff(func, x, h)
+
+def three_pt_bckd_diff(f, x, h):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    mylib.three_pt_bckd_diff.argtypes = [CFUNCTYPE, ctypes.c_double, ctypes.c_double]
+    mylib.three_pt_bckd_diff.restype = ctypes.c_double
+    return mylib.three_pt_bckd_diff(func, x, h)
+
+def three_pt_cent_diff(f, x, h):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    mylib.three_pt_cent_diff.argtypes = [CFUNCTYPE, ctypes.c_double, ctypes.c_double]
+    mylib.three_pt_cent_diff.restype = ctypes.c_double
+    return mylib.three_pt_cent_diff(func, x, h)
+
+# // Numerical Integration Methods Section:
+# // - Trapezoidal Rule
+# // - Simpson's Rule
+
+def trap(f, a, b, n):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    mylib.trap.argtypes = [CFUNCTYPE, ctypes.c_double, ctypes.c_double, ctypes.c_int]
+    mylib.trap.restype = ctypes.c_double
+    return mylib.trap(func, a, b, n)
+
+def simps(f, a, b, n):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    mylib.simps.argtypes = [CFUNCTYPE, ctypes.c_double, ctypes.c_double, ctypes.c_int]
+    mylib.simps.restype = ctypes.c_double
+    return mylib.simps(func, a, b, n)
+
+# // Ordinary Differential Equations Section:
+# // - Euler's Method
+# // - Modified Euler's Method
+# // - Runge-Kutta's 2nd Order
+# // - Runge-Kutta's 3rd Order
+# // - Runge-Kutta's 4th Order
+
+def euler(f, x0, y0, h, n):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    x = (ctypes.c_double * (n + 1))()
+    y = (ctypes.c_double * (n + 1))()
+    mylib.euler(func, x0, y0, h, n, x, y)
+    return list(x), list(y)
+
+def mod_euler(f, x0, y0, h, n):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    x = (ctypes.c_double * (n + 1))()
+    y = (ctypes.c_double * (n + 1))()
+    mylib.mod_euler(func, x0, y0, h, n, x, y)
+    return list(x), list(y)
+
+def rk2(f, x0, y0, h, n):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    x = (ctypes.c_double * (n + 1))()
+    y = (ctypes.c_double * (n + 1))()
+    mylib.rk2(func, x0, y0, h, n, x, y)
+    return list(x), list(y)
+
+def rk3(f, x0, y0, h, n):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    x = (ctypes.c_double * (n + 1))()
+    y = (ctypes.c_double * (n + 1))()
+    mylib.rk3(func, x0, y0, h, n, x, y)
+    return list(x), list(y)
+
+def rk4(f, x0, y0, h, n):
+    CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double, ctypes.c_double)
+    func = CFUNCTYPE(f)
+    x = (ctypes.c_double * (n + 1))()
+    y = (ctypes.c_double * (n + 1))()
+    mylib.rk4(func, x0, y0, h, n, x, y)
+    return list(x), list(y)
+
+
+# // Aitken's Delta-Squared Acceleration Process
+def atkn_dlta_sqd(x):
+    n = len(x)
+    array_type = ctypes.c_double * n
+    mylib.atkn_dlta_sqd.argtypes = [array_type, ctypes.c_int]
+    mylib.atkn_dlta_sqd.restype = ctypes.c_double
+    
+    x_array = array_type(*x)
+    return mylib.atkn_dlta_sqd(x_array, n)
+
+class NumericalMethodsApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Numerical Methods")
@@ -130,7 +348,13 @@ def bisection(f, a, b, err, iter):
 
         tk.Button(popup, text="Run", command=run_bisection).grid(row=5, columnspan=2)
 
-class NumericalMethodsApp(tk.Tk):
+
+# Run the app
+if __name__ == "__main__":
+    app = NumericalMethodsApp()
+    app.mainloop()
+
+# class NumericalMethodsApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Numerical Methods")
@@ -157,7 +381,7 @@ class NumericalMethodsApp(tk.Tk):
         frame = self.frames[page_name]
         frame.tkraise()
 
-class HomePage(ttk.Frame):
+# class HomePage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -178,7 +402,7 @@ class HomePage(ttk.Frame):
             button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
             button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
-class RootFindingPage(ttk.Frame):
+# class RootFindingPage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -202,7 +426,7 @@ class RootFindingPage(ttk.Frame):
         back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
         back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
-class InterpolationPage(ttk.Frame):
+# class InterpolationPage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -224,7 +448,7 @@ class InterpolationPage(ttk.Frame):
         back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
         back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
-class LinearAlgebraPage(ttk.Frame):
+# class LinearAlgebraPage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -244,7 +468,7 @@ class LinearAlgebraPage(ttk.Frame):
         back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
         back_button.pack(side="top", pady=5, anchor="center")
 
-class NumericalIntegrationPage(ttk.Frame):
+# class NumericalIntegrationPage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -264,7 +488,7 @@ class NumericalIntegrationPage(ttk.Frame):
         back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
         back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
-class NumericalDifferentiationPage(ttk.Frame):
+# class NumericalDifferentiationPage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -287,7 +511,7 @@ class NumericalDifferentiationPage(ttk.Frame):
         back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
         back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
 
-class ODEsPage(ttk.Frame):
+# class ODEsPage(ttk.Frame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
@@ -309,7 +533,147 @@ class ODEsPage(ttk.Frame):
 
         back_button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
         back_button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
-# Run the app
-if __name__ == "__main__":
-    app = NumericalMethodsApp()
-    app.mainloop()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

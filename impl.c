@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include"num_methods.h"
 #include<math.h>
+#include<stdlib.h>
 
 
 // Root-finding Methods Section:
@@ -430,8 +431,6 @@ double atkn_dlta_sqd(double *x, int n){
     free(y);
     return result;
 }
-
-
 
 
 int main(){
