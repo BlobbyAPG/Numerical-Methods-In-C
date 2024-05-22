@@ -1,18 +1,19 @@
 import tkinter as tk
 from tkinter import messagebox
+from tkinter import ttk
 import ctypes
 import ctypes
 import os
 
 # if os.name == 'nt':
-#     lib = ctypes.CDLL("build/impl.dll")
+#     mylib = ctypes.CDLL("build/impl.dll")
 
-def bisection(f, a, b, tol, max_iter):
+def bisection(f, a, b, err, iter):
     CFUNCTYPE = ctypes.CFUNCTYPE(ctypes.c_double, ctypes.c_double)
     func = CFUNCTYPE(f)
-    return lib.bisection(func, a, b, tol, max_iter)
+    return mylib.bisection(func, a, b, err, iter)
 
-class NumericalMethodsApp(tk.Tk):
+# class NumericalMethodsApp(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Numerical Methods")
@@ -129,6 +130,120 @@ class NumericalMethodsApp(tk.Tk):
 
         tk.Button(popup, text="Run", command=run_bisection).grid(row=5, columnspan=2)
 
+class NumericalMethodsApp(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Numerical Methods")
+        self.geometry(f"{self.winfo_screenwidth()}x{self.winfo_screenheight()}")
+
+        # Set the icon for the window
+        if os.name == 'nt':
+            self.iconbitmap('D:\\IMPORTANT DATA\\AIU Computer Engineering\\CE Year 2\\Semester 2\\MAT315 Numerical Analysis\\Project\\Numerical-Methods-In-C\\nummethodslogoJPG.ico')
+
+        self.frames = {}
+        container = ttk.Frame(self)
+        container.pack(fill="both", expand=True)
+
+        for F in (HomePage, RootFindingPage, InterpolationPage, LinearAlgebraPage,
+                  NumericalIntegrationPage, NumericalDifferentiationPage, ODEsPage):
+            page_name = F.__name__
+            frame = F(parent=container, controller=self)
+            self.frames[page_name] = frame
+            frame.grid(row=0, column=0, sticky="nsew")
+
+        self.show_frame("HomePage")
+
+    def show_frame(self, page_name):
+        frame = self.frames[page_name]
+        frame.tkraise()
+
+class HomePage(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ttk.Label(self, text="Numerical Methods", font=("Helvetica", 16))
+        label.pack(pady=10, padx=10)
+
+        buttons = [
+            ("Root-finding methods", "RootFindingPage"),
+            ("Interpolation and approximation", "InterpolationPage"),
+            ("Linear Algebra", "LinearAlgebraPage"),
+            ("Numerical Integration", "NumericalIntegrationPage"),
+            ("Numerical Differentiation", "NumericalDifferentiationPage"),
+            ("ODEs", "ODEsPage")
+        ]
+
+        for text, page_name in buttons:
+            button = ttk.Button(self, text=text, command=lambda pn=page_name: controller.show_frame(pn))
+            button.pack(side="top", pady=5, anchor="center", expand=False, fill="none")
+
+class RootFindingPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ttk.Label(self, text="Root-finding Methods", font=("Helvetica", 16))
+        label.pack(pady=10, padx=10)
+
+        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        button.pack(side="top", pady=5, anchor="center")
+
+
+class InterpolationPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ttk.Label(self, text="Interpolation and Approximation", font=("Helvetica", 16))
+        label.pack(pady=10, padx=10)
+
+        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        button.pack(side="top", pady=5, anchor="center")
+
+class LinearAlgebraPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ttk.Label(self, text="Linear Algebra", font=("Helvetica", 16))
+        label.pack(pady=10, padx=10)
+
+        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        button.pack(side="top", pady=5, anchor="center")
+
+class NumericalIntegrationPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ttk.Label(self, text="Numerical Integration", font=("Helvetica", 16))
+        label.pack(pady=10, padx=10)
+
+        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        button.pack(side="top", pady=5, anchor="center")
+
+class NumericalDifferentiationPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ttk.Label(self, text="Numerical Differentiation", font=("Helvetica", 16))
+        label.pack(pady=10, padx=10)
+
+        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        button.pack(side="top", pady=5, anchor="center")
+
+class ODEsPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        super().__init__(parent)
+        self.controller = controller
+
+        label = ttk.Label(self, text="Ordinary Differential Equations (ODEs)", font=("Helvetica", 16))
+        label.pack(pady=10, padx=10)
+
+        button = ttk.Button(self, text="Back to Home", command=lambda: controller.show_frame("HomePage"))
+        button.pack(side="top", pady=5, anchor="center")
 # Run the app
 if __name__ == "__main__":
     app = NumericalMethodsApp()

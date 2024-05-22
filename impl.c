@@ -11,15 +11,15 @@
 // - Fixed-Point Iteration Method
 // - Halley's Method
 
-double bisection(double (*f)(double), double a, double b, double tol, int max_iter){
+double bisection(double (*f)(double), double a, double b, double err, int iter){
     double fa, fb, p, fp;
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         p = (a + b) / 2;
         fa = f(a);
         fb = f(b);
         fp = f(p);
-        if(fp == 0 || (b - a) / 2 < tol){
+        if(fp == 0 || (b - a) / 2 < err){
             return p;
         }
         if(fa * fp > 0){
@@ -32,10 +32,10 @@ double bisection(double (*f)(double), double a, double b, double tol, int max_it
     return p;
 }
 
-double newt_raph(double (*f)(double), double (*df)(double), double x0, double tol, int max_iter){
+double newt_raph(double (*f)(double), double (*df)(double), double x0, double err, int iter){
     double x = x0;
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         double fx = f(x);
         double dfx = df(x);
         if(fabs(dfx) < 1e-14){
@@ -43,7 +43,7 @@ double newt_raph(double (*f)(double), double (*df)(double), double x0, double to
         }
         double dx = fx / dfx;
         x = x - dx;
-        if(fabs(dx) < tol){
+        if(fabs(dx) < err){
             return x;
         }
         i++;
@@ -51,11 +51,11 @@ double newt_raph(double (*f)(double), double (*df)(double), double x0, double to
     return x;
 }
 
-double secant(double (*f)(double), double x0, double x1, double tol, int max_iter){
+double secant(double (*f)(double), double x0, double x1, double err, int iter){
     double x = x1;
     double x_prev = x0;
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         double fx = f(x);
         double fx_prev = f(x_prev);
         if(fx - fx_prev == 0){
@@ -64,7 +64,7 @@ double secant(double (*f)(double), double x0, double x1, double tol, int max_ite
         double dx = fx * (x - x_prev) / (fx - fx_prev);
         x_prev = x;
         x = x - dx;
-        if(fabs(dx) < tol){
+        if(fabs(dx) < err){
             return x;
         }
         i++;
@@ -72,15 +72,15 @@ double secant(double (*f)(double), double x0, double x1, double tol, int max_ite
     return x;
 }
 
-double reg_falsi(double (*f)(double), double a, double b, double tol, int max_iter){
+double reg_falsi(double (*f)(double), double a, double b, double err, int iter){
     double fa, fb, p, fp;
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         fa = f(a);
         fb = f(b);
         p = (a * fb - b * fa) / (fb - fa);
         fp = f(p);
-        if(fp == 0 || (b - a) / 2 < tol){
+        if(fp == 0 || (b - a) / 2 < err){
             return p;
         }
         if(fa * fp > 0){
@@ -93,14 +93,14 @@ double reg_falsi(double (*f)(double), double a, double b, double tol, int max_it
     return p;
 }
 
-double fixed_pt_iter(double (*g)(double), double x0, double tol, int max_iter){
+double fixed_pt_iter(double (*g)(double), double x0, double err, int iter){
     double x = x0;
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         double gx = g(x);
         double dx = gx - x;
         x = gx;
-        if(fabs(dx) < tol){
+        if(fabs(dx) < err){
             return x;
         }
         i++;
@@ -108,10 +108,10 @@ double fixed_pt_iter(double (*g)(double), double x0, double tol, int max_iter){
     return x;
 }
 
-double halleys(double (*f)(double), double (*df)(double), double (*ddf)(double), double x0, double tol, int max_iter){
+double halleys(double (*f)(double), double (*df)(double), double (*ddf)(double), double x0, double err, int iter){
     double x = x0;
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         double fx = f(x);
         double dfx = df(x);
         double ddfx = ddf(x);
@@ -120,7 +120,7 @@ double halleys(double (*f)(double), double (*df)(double), double (*ddf)(double),
         }
         double dx = 2 * fx * dfx / (2 * pow(dfx, 2) - fx * ddfx);
         x = x - dx;
-        if(fabs(dx) < tol){
+        if(fabs(dx) < err){
             return x;
         }
         i++;
@@ -139,7 +139,7 @@ double lagrange(double *x, double *y, int n, double x_interp){
     for (int i = 0; i < n; i++) {
         double term = y[i];
         for (int j = 0; j < n; j++) {
-            if (j != i) {
+            if (j != i && x[i] != x[j]) { // Avoid division by zero
                 term *= (x_interp - x[j]) / (x[i] - x[j]);
             }
         }
@@ -155,7 +155,12 @@ double divi_diffs(double *x, double *y, double *coefficients, int n){
     }
     for (int j = 1; j < n; j++) {
         for (int i = n - 1; i >= j; i--) {
-            coefficients[i] = (coefficients[i] - coefficients[i - 1]) / (x[i] - x[i - j]);
+            if (x[i] != x[i - j]) { // Avoid division by zero
+                coefficients[i] = (coefficients[i] - coefficients[i - 1]) / (x[i] - x[i - j]);
+            } else {
+                // Handle repeated x values
+                coefficients[i] = 0; // Set coefficient to zero
+            }
         }
     }
     return coefficients[n - 1];
@@ -167,7 +172,11 @@ double fwd_intpol(double *x, double *y, int n, double x_interp){
     double term = 1;
     double u = (x_interp - x[0]) / h;
     for (int i = 1; i < n; i++) {
-        term *= (u - i + 1) / i;
+        if (h != 0) { // Avoid division by zero
+            term *= (u - i + 1) / i;
+        } else {
+            term = 0; // Set term to zero
+        }
         result += term * y[i];
     }
     return result;
@@ -179,7 +188,11 @@ double bckwd_intpol(double *x, double *y, int n, double x_interp){
     double term = 1;
     double u = (x_interp - x[n - 1]) / h;
     for (int i = 1; i < n; i++) {
-        term *= (u + i - 1) / i;
+        if (h != 0) { // Avoid division by zero
+            term *= (u + i - 1) / i;
+        } else {
+            term = 0; // Set term to zero
+        }
         result += term * y[n - 1 - i];
     }
     return result;
@@ -189,16 +202,29 @@ double bckwd_intpol(double *x, double *y, int n, double x_interp){
 // - Jacobi Iterative Method
 // - Gauss-Seidel Iterative Method
 
-void jacobi(double **A, double *b, double *x, int n, double tol, int max_iter){
+void jacobi(double **A, double *b, double *x, int n, double err, int iter){
+    if (A == NULL || b == NULL || x == NULL) {
+        // Handle null pointers
+        return;
+    }
     double *x_new = malloc(n * sizeof(double));
+    if (x_new == NULL) {
+        // Handle memory allocation failure
+        return;
+    }
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         for (int j = 0; j < n; j++) {
             x_new[j] = b[j];
             for (int k = 0; k < n; k++) {
                 if (j != k) {
                     x_new[j] -= A[j][k] * x[k];
                 }
+            }
+            if (A[j][j] == 0) {
+                // Handle division by zero
+                free(x_new);
+                return;
             }
             x_new[j] /= A[j][j];
         }
@@ -207,7 +233,7 @@ void jacobi(double **A, double *b, double *x, int n, double tol, int max_iter){
             error += fabs(x_new[j] - x[j]);
             x[j] = x_new[j];
         }
-        if (error < tol) {
+        if (error < err) {
             break;
         }
         i++;
@@ -215,9 +241,13 @@ void jacobi(double **A, double *b, double *x, int n, double tol, int max_iter){
     free(x_new);
 }
 
-void gau_sei(double **A, double *b, double *x, int n, double tol, int max_iter){
+void gau_sei(double **A, double *b, double *x, int n, double err, int iter){
+    if (A == NULL || b == NULL || x == NULL) {
+        // Handle null pointers
+        return;
+    }
     int i = 0;
-    while(i < max_iter){
+    while(i < iter){
         for (int j = 0; j < n; j++) {
             double sum = b[j];
             for (int k = 0; k < n; k++) {
@@ -225,13 +255,17 @@ void gau_sei(double **A, double *b, double *x, int n, double tol, int max_iter){
                     sum -= A[j][k] * x[k];
                 }
             }
+            if (A[j][j] == 0) {
+                // Handle division by zero
+                return;
+            }
             x[j] = sum / A[j][j];
         }
         double error = 0;
         for (int j = 0; j < n; j++) {
             error += fabs(A[j][j] * x[j] - b[j]);
         }
-        if (error < tol) {
+        if (error < err) {
             break;
         }
         i++;
@@ -246,22 +280,52 @@ void gau_sei(double **A, double *b, double *x, int n, double tol, int max_iter){
 // - Three Point Central Difference Method
 
 double two_pt_fwd_diff(double (*f)(double), double x, double h){
+    // Check if h is zero to avoid division by zero
+    if (fabs(h) < 1e-10) {
+        // Handle division by zero
+        return NAN; // Return NaN (Not-a-Number) to indicate error
+    }
+    // Compute the two-point forward difference formula
     return (f(x + h) - f(x)) / h;
 }
 
 double two_pt_bckd_diff(double (*f)(double), double x, double h){
+    // Check if h is zero to avoid division by zero
+    if (fabs(h) < 1e-10) {
+        // Handle division by zero
+        return NAN; // Return NaN (Not-a-Number) to indicate error
+    }
+    // Compute the two-point backward difference formula
     return (f(x) - f(x - h)) / h;
 }
 
 double three_pt_fwd_diff(double (*f)(double), double x, double h){
+    // Check if h is zero to avoid division by zero
+    if (fabs(h) < 1e-10) {
+        // Handle division by zero
+        return NAN; // Return NaN (Not-a-Number) to indicate error
+    }
+    // Compute the three-point forward difference formula
     return (-3 * f(x) + 4 * f(x + h) - f(x + 2 * h)) / (2 * h);
 }
 
 double three_pt_bckd_diff(double (*f)(double), double x, double h){
+    // Check if h is zero to avoid division by zero
+    if (fabs(h) < 1e-10) {
+        // Handle division by zero
+        return NAN; // Return NaN (Not-a-Number) to indicate error
+    }
+    // Compute the three-point backward difference formula
     return (3 * f(x) - 4 * f(x - h) + f(x - 2 * h)) / (2 * h);
 }
 
 double three_pt_cent_diff(double (*f)(double), double x, double h){
+    // Check if h is zero to avoid division by zero
+    if (fabs(h) < 1e-10) {
+        // Handle division by zero
+        return NAN; // Return NaN (Not-a-Number) to indicate error
+    }
+    // Compute the three-point central difference formula
     return (f(x + h) - f(x - h)) / (2 * h);
 }
 
@@ -351,7 +415,21 @@ void rk4(double (*f)(double, double), double x0, double y0, double h, int n, dou
     }
 }
 
-
+// Aitken's Delta-Squared Acceleration Process
+double atkn_dlta_sqd(double *x, int n){
+    double *y = malloc(n * sizeof(double));
+    for (int i = 0; i < n; i++) {
+        y[i] = x[i];
+    }
+    for (int i = 0; i < n - 2; i++) {
+        for (int j = 0; j < n - i - 2; j++) {
+            y[j] = y[j] - pow(y[j + 1] - y[j], 2) / (y[j + 2] - 2 * y[j + 1] + y[j]);
+        }
+    }
+    double result = y[0];
+    free(y);
+    return result;
+}
 
 
 
