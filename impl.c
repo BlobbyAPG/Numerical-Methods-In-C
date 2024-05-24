@@ -341,7 +341,22 @@ double trap(double (*f)(double), double a, double b, int n){
     for (int i = 1; i < n; i++) {
         sum += f(a + i * h);
     }
-    return h * sum;
+    int result = 0;
+    return result = h * sum;
+
+    // Calculate the true value of the integral
+    double true_value = 1.0 / 3.0 * (pow(b, 3) - pow(a, 3));
+
+    // Calculate the absolute error
+    double abs_error = fabs(true_value - result);
+
+    // Calculate the relative error
+    double rel_error = fabs(abs_error / true_value);
+
+    printf("Absolute Error: %lf\n", abs_error);
+    printf("Relative Error: %lf\n", rel_error);
+
+    return result;
 }
 
 double simps(double (*f)(double), double a, double b, int n){
@@ -350,7 +365,20 @@ double simps(double (*f)(double), double a, double b, int n){
     for (int i = 1; i < n; i++) {
         sum += 2 * f(a + i * h) * (i % 2 == 0 ? 2 : 4);
     }
-    return h * sum / 3;
+    int result = 0;
+    return result = h * sum / 3;
+
+// Calculate the true value of the integral
+    double true_value = 1.0 / 3.0 * (pow(b, 3) - pow(a, 3));
+
+    // Calculate the absolute error
+    double abs_error = fabs(true_value - result);
+
+    // Calculate the relative error
+    double rel_error = fabs(abs_error / true_value);
+
+    printf("Absolute Error: %lf\n", abs_error);
+    printf("Relative Error: %lf\n", rel_error);
 }
 
 // Ordinary Differential Equations Section:
@@ -434,5 +462,126 @@ double atkn_dlta_sqd(double *x, int n){
 
 
 int main(){
+    // Root-Finding Methods
+    printf("Root-Finding Methods:\n");
 
+    // Bisection Method
+    printf("Bisection Method:\n");
+    printf("Iteration\tRoot\tConvergence Rate\n");
+    double root_bisection = bisection(f, 1, 2, 1e-6, 100);
+    printf("%d\t\t%.6lf\n", iter, root_bisection);
+
+    // Newton-Raphson Method
+    printf("Newton-Raphson Method:\n");
+    printf("Iteration\tRoot\tConvergence Rate\n");
+    double root_newton_raphson = newt_raph(f, df, 1.5, 1e-6, 100);
+    printf("%d\t\t%.6lf\n", iter, root_newton_raphson);
+
+    // Secant Method
+    printf("Secant Method:\n");
+    printf("Iteration\tRoot\tConvergence Rate\n");
+    double root_secant = secant(f, 1.5, 1.6, 1e-6, 100);
+    printf("%d\t\t%.6lf\n", iter, root_secant);
+
+    // Regula Falsi Method
+    printf("Regula Falsi Method:\n");
+    printf("Iteration\tRoot\tConvergence Rate\n");
+    double root_reg_falsi = reg_falsi(f, 1, 2, 1e-6, 100);
+    printf("%d\t\t%.6lf\n", iter, root_reg_falsi);
+
+    // Fixed-Point Iteration Method
+    printf("Fixed-Point Iteration Method:\n");
+    printf("Iteration\tRoot\tConvergence Rate\n");
+    double root_fixed_pt_iter = fixed_pt_iter(g, 1.5, 1e-6, 100);
+    printf("%d\t\t%.6lf\n", iter, root_fixed_pt_iter);
+
+    // Halley's Method
+    printf("Halley's Method:\n");
+    printf("Iteration\tRoot\tConvergence Rate\n");
+    double root_halleys = halleys(f, df, ddf, 1.5, 1e-6, 100);
+    printf("%d\t\t%.6lf\n", iter, root_halleys);
+
+    // Numerical Differentiation Methods
+    printf("Numerical Differentiation Methods:\n");
+
+    // Two-Point Forward Difference Method
+    printf("Two-Point Forward Difference Method:\n");
+    printf("Iteration\tResult\tConvergence Rate\n");
+    double result_two_pt_fwd_diff = two_pt_fwd_diff(f, M_PI / 4, 0.1);
+    printf("%d\t\t%.6lf\n", iter, result_two_pt_fwd_diff);
+
+    // Two-Point Backward Difference Method
+    printf("Two-Point Backward Difference Method:\n");
+    printf("Iteration\tResult\tConvergence Rate\n");
+    double result_two_pt_bckd_diff = two_pt_bckd_diff(f, M_PI / 4, 0.1);
+    printf("%d\t\t%.6lf\n", iter, result_two_pt_bckd_diff);
+
+    // Numerical Integration Methods
+    printf("Numerical Integration Methods:\n");
+
+    // Trapezoidal Rule
+    printf("Trapezoidal Rule:\n");
+    printf("Iteration\tResult\tConvergence Rate\n");
+    double result_trap = trap(f_sq, 0, 1, 10);
+    printf("%d\t\t%.6lf\n", iter, result_trap);
+
+    // Simpson's Rule
+    printf("Simpson's Rule:\n");
+    printf("Iteration\tResult\tConvergence Rate\n");
+    double result_simps = simps(f_sq, 0, 1, 10);
+    printf("%d\t\t%.6lf\n", iter, result_simps);
+
+    // Ordinary Differential Equations (ODEs)
+    printf("Ordinary Differential Equations (ODEs):\n");
+
+    double result;
+// Example functions for testing
+    double f(double x) {
+        return x * x - 4; // x^2 - 4
+    }
+
+    double df(double x) {
+        return 2 * x; // Derivative of x^2 - 4: 2x
+    }
+
+    double ddf(double x) {
+        return 2; // Derivative of x^2 - 4: 2x
+    }
+
+    double g(double x) {
+        return x * x * x - 2 * x - 5; // x^3 - 2x - 5
+    }
+
+    double g_diff(double x) {
+        return 3 * x * x - 2; // Derivative of x^3 - 2x - 5: 3x^2 - 2
+    }
+
+// Example ordinary differential equation
+    double f_diff(double x, double y) {
+        return x + y; // Differential equation: y' = x + y
+    }
+
+    double f_sq(double x) {
+        return x * x; // f(x) = x^2
+    }
+
+    int iter = 12;
+
+    // Euler's Method
+    printf("Euler's Method:\n");
+    printf("Iteration\tResult\tConvergence Rate\n");
+    double x_euler[11], y_euler[11];
+    euler(f_diff, 0, 1, 0.1, 10, x_euler, y_euler);
+    for (int i = 0; i <= 10; i++) {
+        printf("%d\t\t%.6lf\n", i, y_euler[i]);
+    }
+
+    // Modified Euler's Method
+    printf("Modified Euler's Method:\n");
+    printf("Iteration\tResult\tConvergence Rate\n");
+    double x_mod_euler[11], y_mod_euler[11];
+    mod_euler(f_diff, 0, 1, 0.1, 10, x_mod_euler, y_mod_euler);
+    for (int i = 0; i <= 10; i++) {
+        printf("%d\t\t%.6lf\n", i, y_mod_euler[i]);
+    }
 }
